@@ -29,53 +29,12 @@ import sys
 import torch
 
 # Dataset
-from datasets.ModelNet40 import *
-from datasets.S3DIS import *
-from datasets.SemanticKitti import *
+from datasets.NPM3D import *
 from torch.utils.data import DataLoader
 
 from utils.config import Config
 from utils.tester import ModelTester
 from models.architectures import KPCNN, KPFCNN
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-#
-#           Main Call
-#       \***************/
-#
-
-def model_choice(chosen_log):
-
-    ###########################
-    # Call the test initializer
-    ###########################
-
-    # Automatically retrieve the last trained model
-    if chosen_log in ['last_ModelNet40', 'last_ShapeNetPart', 'last_S3DIS']:
-
-        # Dataset name
-        test_dataset = '_'.join(chosen_log.split('_')[1:])
-
-        # List all training logs
-        logs = np.sort([os.path.join('results', f) for f in os.listdir('results') if f.startswith('Log')])
-
-        # Find the last log of asked dataset
-        for log in logs[::-1]:
-            log_config = Config()
-            log_config.load(log)
-            if log_config.dataset.startswith(test_dataset):
-                chosen_log = log
-                break
-
-        if chosen_log in ['last_ModelNet40', 'last_ShapeNetPart', 'last_S3DIS']:
-            raise ValueError('No log of the dataset "' + test_dataset + '" found')
-
-    # Check if log exists
-    if not os.path.exists(chosen_log):
-        raise ValueError('The given log does not exists: ' + chosen_log)
-
-    return chosen_log
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -103,8 +62,7 @@ if __name__ == '__main__':
     # Choose to test on validation or test split
     on_val = True
 
-    # Deal with 'last_XXXXXX' choices
-    chosen_log = model_choice(chosen_log)
+
 
     ############################
     # Initialize the environment
@@ -155,6 +113,7 @@ if __name__ == '__main__':
     print()
     print('Data Preparation')
     print('****************')
+    point_cloud_names = ['Scene_2_Test']
 
     if on_val:
         set = 'validation'
@@ -162,18 +121,10 @@ if __name__ == '__main__':
         set = 'test'
 
     # Initiate dataset
-    if config.dataset == 'ModelNet40':
-        test_dataset = ModelNet40Dataset(config, train=False)
-        test_sampler = ModelNet40Sampler(test_dataset)
-        collate_fn = ModelNet40Collate
-    elif config.dataset == 'S3DIS':
-        test_dataset = S3DISDataset(config, set='validation', use_potentials=True)
-        test_sampler = S3DISSampler(test_dataset)
-        collate_fn = S3DISCollate
-    elif config.dataset == 'SemanticKitti':
-        test_dataset = SemanticKittiDataset(config, set=set, balance_classes=False)
-        test_sampler = SemanticKittiSampler(test_dataset)
-        collate_fn = SemanticKittiCollate
+    if config.dataset == 'NPM3D':
+        test_dataset = NPM3DDataset(config,point_cloud_names,set=set)
+        test_sampler = NPM3DSampler(test_dataset)
+        collate_fn = NPM3DCollate
     else:
         raise ValueError('Unsupported dataset : ' + config.dataset)
 
