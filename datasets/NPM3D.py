@@ -53,7 +53,7 @@ from utils.config import bcolors
 class NPM3DDataset(PointCloudDataset):
     """Class to handle NPM3D dataset."""
 
-    def __init__(self, config, set='training', use_potentials=True, load_data=True):
+    def __init__(self, config, point_cloud_names, set='training', use_potentials=True, load_data=True):
         """
         This dataset is small enough to be stored in-memory, so load all point clouds here
         """
@@ -67,13 +67,13 @@ class NPM3DDataset(PointCloudDataset):
         self.label_to_names = {0: 'unclassified',
                                1: 'ground',
                                2: 'building',
-                               3: 'pole',       # pole - road sign - traffic light
-                               4: 'bollard',    # bollard - small pole
-                               5: 'trash',      # trash can
-                               6: 'barrier',
-                               7: 'pedestrian',
-                               8: 'car',
-                               9: 'natural'     # natural - vegetation
+                               3: 'pole',  
+                               4: 'fence',   
+                               5: 'utilityLine',      
+                               6: 'artifact',
+                               7: 'car',
+                               8: 'natural',
+                               9: 'other'
                                }
 
         # Initialize a bunch of variables concerning class labels
@@ -83,7 +83,7 @@ class NPM3DDataset(PointCloudDataset):
         self.ignored_labels = np.array([0])
 
         # Dataset folder
-        self.path = '../../Data/Paris'
+        self.path = '../../Data/SPB'
 
         # Type of task conducted on this dataset
         self.dataset_task = 'cloud_segmentation'
@@ -110,12 +110,11 @@ class NPM3DDataset(PointCloudDataset):
         ply_path = join(self.path, self.train_path)
 
         # Proportion of validation scenes
-        self.cloud_names = ['Lille1_1', 'Lille1_2', 'Lille2', 'Paris', 'ajaccio_2', 'ajaccio_57', 'dijon_9']
+        self.cloud_names = ['Scene_1_Train', 'Scene_1_Test', 'Scene_2_Train', 'Scene_2_Test', 'Scene_3_Train', 'Scene_3_Test','real_scene']
         self.all_splits = [0, 1, 2, 3, 4, 5, 6]
         self.validation_split = 1
-        # self.test_cloud_names = ['ajaccio_2', 'ajaccio_57', 'dijon_9']
-        self.test_splits = [4, 5, 6]
-        self.train_splits = [0, 2, 3]
+        self.test_splits = [3,5]
+        self.train_splits = [0,2,4,6]
 
         # Number of models used per epoch
         if self.set == 'training':
@@ -688,18 +687,18 @@ class NPM3DDataset(PointCloudDataset):
             cloud_points = np.hstack((cloud_x, cloud_y, cloud_z))
 
             # Labels
-            if cloud_name in ['ajaccio_2', 'ajaccio_57', 'dijon_9']:
+            if cloud_name in ['Scene_2_Test','Scene_3_Test']:
 
                 field_names = ['x', 'y', 'z']
                 write_ply(join(ply_path, cloud_name + '.ply'), cloud_points, field_names)
 
             else:
-                labels = original_ply['class']
+                labels = original_ply['scalar_label']
                 labels = labels.astype(np.int32)
                 labels = labels.reshape(len(labels), 1)
 
                 # Save as ply
-                field_names = ['x', 'y', 'z', 'class']
+                field_names = ['x', 'y', 'z', 'scalar_label']
                 write_ply(join(ply_path, cloud_name + '.ply'), [cloud_points, labels], field_names)
 
         print('Done in {:.1f}s'.format(time.time() - t0))
@@ -738,7 +737,7 @@ class NPM3DDataset(PointCloudDataset):
                 # read ply with data
                 data = read_ply(sub_ply_file)
                 # sub_colors = np.vstack((data['red'], data['green'], data['blue'])).T
-                sub_labels = data['class']
+                sub_labels = data['label']
 
                 # Read pkl with search tree
                 with open(KDTree_file, 'rb') as f:
@@ -756,7 +755,7 @@ class NPM3DDataset(PointCloudDataset):
                 if self.set == 'test':
                     labels = np.zeros((data.shape[0],), dtype=np.int32)
                 else:
-                    labels = data['class']
+                    labels = data['scalar_label']
 
                 # Subsample cloud
                 sub_points, sub_labels = grid_subsampling(points,
@@ -779,7 +778,7 @@ class NPM3DDataset(PointCloudDataset):
                 # Save ply
                 write_ply(sub_ply_file,
                           [sub_points, sub_labels],
-                          ['x', 'y', 'z', 'class'])
+                          ['x', 'y', 'z', 'scalar_label'])
 
             # Fill data containers
             self.input_trees += [search_tree]
@@ -871,7 +870,7 @@ class NPM3DDataset(PointCloudDataset):
                     if self.set == 'test':
                         labels = np.zeros((data.shape[0],), dtype=np.int32)
                     else:
-                        labels = data['class']
+                        labels = data['scalar_label']
 
                     # Compute projection inds
                     idxs = self.input_trees[i].query(points, return_distance=False)
