@@ -54,8 +54,30 @@ if __name__ == '__main__':
     #       > 'last_XXX': Automatically retrieve the last trained model on dataset XXX
     #       > '(old_)results/Log_YYYY-MM-DD_HH-MM-SS': Directly provide the path of a trained model
 
-    chosen_log = 'results/Light_KPFCNN'
 
+    path_to_results = os.getcwd() + "/results"
+    list_of_logs = os.listdir(path_to_results)
+    print("Choose Training Log: Enter a number of Log")
+    print(list_of_logs)
+
+    for i in range(len(list_of_logs)):
+        print(f"{i} {list_of_logs[i]}")
+
+    while True:
+        input_number = input()
+        try:
+            value_of_input = int(input_number)
+            if value_of_input < len(list_of_logs):
+                print(f"You choosed log: {value_of_input}")                
+                break
+            print(f"you entered inccorent number")
+        except ValueError:
+            print("Please enter a number")
+            pass
+        
+        
+    
+    chosen_log = f"results/{list_of_logs[value_of_input]}"
     # Choose the index of the checkpoint to load OR None if you want to load the current checkpoint
     chkp_idx = -1
 
