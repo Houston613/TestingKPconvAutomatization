@@ -126,6 +126,61 @@ if __name__ == '__main__':
             str = f"{chosen_data_folder}/original_ply/"
             print(str)
             shutil.move(f"{chosen_data_folder}/{current_file}",f"{chosen_data_folder}/original_ply/{current_file}")
+    
+    print("Please specify what files you want to be test files")
+    print("Write at least one number")
+    print("if you add enough files - write -1")    
+
+    current_folder_with_data = f"{chosen_data_folder}/original_ply/"
+
+    temp_list_of_filenames_in_ply_folder = next(os.walk(current_folder_with_data))[2]
+    list_of_filenames_in_ply_folder = []
+    
+    for i in range(len(temp_list_of_filenames_in_ply_folder)):
+        list_of_filenames_in_ply_folder.append(os.path.splitext(temp_list_of_filenames_in_ply_folder[i])[0])
+
+    copy_list = list_of_filenames_in_ply_folder.copy()
+
+    for i in range(len(list_of_filenames_in_ply_folder)):
+        print(f"{i} {list_of_filenames_in_ply_folder[i]}")
+
+    is_at_least_one_file_added = False
+
+    index_of_test_data = []
+    index_of_all_data  = []
+    test_point_cloud_names = []
+    for i in range(len(list_of_filenames_in_ply_folder)):
+        index_of_all_data.append(i)
+
+
+
+    while True:
+        input_number = input()
+        try:
+            value_of_input_for_data = int(input_number)
+            if value_of_input_for_data == -1:
+                if is_at_least_one_file_added:
+                    print("OK you choosed enough files")
+                    break
+                else:
+                    print("You need to choose at least one file to test")
+            else:
+                if value_of_input_for_data < len(list_of_filenames_in_ply_folder):
+                    item = list_of_filenames_in_ply_folder[value_of_input_for_data]
+                    print(f"You choosed file: {item}")
+                    test_point_cloud_names.append(item)
+                    index_of_test_data.append(copy_list.index(item))
+                    list_of_filenames_in_ply_folder.remove(item)
+                    print("Maybe smth else? That's list of what left")
+                    is_at_least_one_file_added = True
+                    if len(list_of_filenames_in_ply_folder) == 0:
+                        print("You choosed all files!")
+                        break
+                else:
+                    print(f"you entered inccorent number")
+        except ValueError:
+            print("Please enter a number")
+            pass
 
 
 
@@ -136,7 +191,7 @@ if __name__ == '__main__':
     chkp_idx = -1
 
     # Choose to test on validation or test split
-    on_val = True
+    on_val = False
 
 
 
@@ -182,14 +237,16 @@ if __name__ == '__main__':
     config.validation_size = 200
     config.input_threads = 10
 
-    ##############
-    # Prepare Data
-    ##############
 
     print()
     print('Data Preparation')
     print('****************')
-    point_cloud_names = ['Scene_2_Test']
+
+    point_cloud_names = copy_list
+    train_point_cloud_ind = None
+    valid_point_cloud_ind = None
+
+    test_point_cloud_ind = index_of_test_data
 
     if on_val:
         set = 'validation'
@@ -198,7 +255,7 @@ if __name__ == '__main__':
 
     # Initiate dataset
     if config.dataset == 'NPM3D':
-        test_dataset = NPM3DDataset(config, chosen_data_folder, point_cloud_names,set=set)
+        test_dataset = NPM3DDataset(config, chosen_data_folder, point_cloud_names, index_of_all_data, train_point_cloud_ind, valid_point_cloud_ind, test_point_cloud_ind, test_point_cloud_names, set=set)
         test_sampler = NPM3DSampler(test_dataset)
         collate_fn = NPM3DCollate
     else:
