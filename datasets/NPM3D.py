@@ -53,7 +53,7 @@ from utils.config import bcolors
 class NPM3DDataset(PointCloudDataset):
     """Class to handle NPM3D dataset."""
 
-    def __init__(self, config, point_cloud_names, set='training', use_potentials=True, load_data=True):
+    def __init__(self, config, path_to_data, point_cloud_names, set='training', use_potentials=True, load_data=True):
         """
         This dataset is small enough to be stored in-memory, so load all point clouds here
         """
@@ -83,7 +83,7 @@ class NPM3DDataset(PointCloudDataset):
         self.ignored_labels = np.array([0])
 
         # Dataset folder
-        self.path = '../../Data/SPB'
+        self.path = path_to_data
 
         # Type of task conducted on this dataset
         self.dataset_task = 'cloud_segmentation'
