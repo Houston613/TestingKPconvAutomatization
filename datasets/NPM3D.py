@@ -53,7 +53,7 @@ from utils.config import bcolors
 class NPM3DDataset(PointCloudDataset):
     """Class to handle NPM3D dataset."""
 
-    def __init__(self, config, path_to_data, point_cloud_names, set='training', use_potentials=True, load_data=True):
+    def __init__(self, config, path_to_data, point_cloud_names, index_of_all_data, train_point_cloud_ind, valid_point_cloud_ind, test_point_cloud_ind, test_point_cloud_names, set='training', use_potentials=True, load_data=True):
         """
         This dataset is small enough to be stored in-memory, so load all point clouds here
         """
@@ -110,11 +110,12 @@ class NPM3DDataset(PointCloudDataset):
         ply_path = join(self.path, self.train_path)
 
         # Proportion of validation scenes
-        self.cloud_names = ['Scene_1_Train', 'Scene_1_Test', 'Scene_2_Train', 'Scene_2_Test', 'Scene_3_Train', 'Scene_3_Test','real_scene']
-        self.all_splits = [0, 1, 2, 3, 4, 5, 6]
-        self.validation_split = 1
-        self.test_splits = [3,5]
-        self.train_splits = [0,2,4,6]
+        self.cloud_names = point_cloud_names
+        self.all_splits = index_of_all_data
+        self.validation_split = valid_point_cloud_ind
+        self.test_splits = test_point_cloud_ind
+        self.train_splits = train_point_cloud_ind
+        self.test = test_point_cloud_names
 
         # Number of models used per epoch
         if self.set == 'training':
@@ -176,6 +177,7 @@ class NPM3DDataset(PointCloudDataset):
         self.num_clouds = 0
         self.test_proj = []
         self.validation_labels = []
+        self.test = test_point_cloud_names
 
         # Start loading
         self.load_subsampled_clouds()
@@ -687,7 +689,7 @@ class NPM3DDataset(PointCloudDataset):
             cloud_points = np.hstack((cloud_x, cloud_y, cloud_z))
 
             # Labels
-            if cloud_name in ['Scene_2_Test','Scene_3_Test']:
+            if cloud_name in self.test:
 
                 field_names = ['x', 'y', 'z']
                 write_ply(join(ply_path, cloud_name + '.ply'), cloud_points, field_names)
@@ -737,7 +739,7 @@ class NPM3DDataset(PointCloudDataset):
                 # read ply with data
                 data = read_ply(sub_ply_file)
                 # sub_colors = np.vstack((data['red'], data['green'], data['blue'])).T
-                sub_labels = data['label']
+                sub_labels = data['scalar_label']
 
                 # Read pkl with search tree
                 with open(KDTree_file, 'rb') as f:
