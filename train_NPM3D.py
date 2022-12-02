@@ -24,6 +24,8 @@
 # Common libs
 import signal
 import os
+import pathlib
+import shutil
 
 # Dataset
 from datasets.NPM3D import *
@@ -229,6 +231,160 @@ if __name__ == '__main__':
     # Prepare Data
     ##############
 
+    path_to_data = os.getcwd() + "/data"
+    list_of_data = os.listdir(path_to_data)
+
+
+    print("Choose Data folder: That's directory with name of data files. Please, specify one of them")
+    print(list_of_data)
+
+    for i in range(len(list_of_data)):
+        print(f"{i} {list_of_data[i]}")
+
+    while True:
+        input_number = input()
+        try:
+            value_of_input_for_data = int(input_number)
+            if value_of_input_for_data < len(list_of_data):
+                print(f"You choosed data folder: {value_of_input_for_data}")                
+                break
+            print(f"you entered inccorent number")
+        except ValueError:
+            print("Please enter a number")
+            pass
+
+    chosen_data_folder = f"{path_to_data}/{list_of_data[value_of_input_for_data]}"
+    print(chosen_data_folder)
+
+    all_files_in_data_folder = os.listdir(chosen_data_folder)
+
+    if 'original_ply' not in all_files_in_data_folder:
+        print('You have not specified original_ply folder in data folder. All .ply must be in that folder. I will create it by next line of code and add all you ply files in there')
+        os.mkdir(os.path.join(chosen_data_folder, 'original_ply'))
+    
+
+    list_of_filenames_in_data_folder = next(os.walk(chosen_data_folder))[2]
+    print(list_of_filenames_in_data_folder)
+
+    for i in range(len(list_of_filenames_in_data_folder)):
+        current_file = list_of_filenames_in_data_folder[i]
+        file_extension = pathlib.Path(current_file).suffix
+        if file_extension == '.ply':
+            
+            print(current_file)
+            str = f"{chosen_data_folder}/original_ply/"
+            print(str)
+            shutil.move(f"{chosen_data_folder}/{current_file}",f"{chosen_data_folder}/original_ply/{current_file}")
+    
+    print("Please specify what files you want to be train files")
+    print("Write at least one number")
+    print("if you add enough files - write -1")    
+
+    current_folder_with_data = f"{chosen_data_folder}/original_ply/"
+
+    temp_list_of_filenames_in_ply_folder = next(os.walk(current_folder_with_data))[2]
+    list_of_filenames_in_ply_folder = []
+    
+    for i in range(len(temp_list_of_filenames_in_ply_folder)):
+        list_of_filenames_in_ply_folder.append(os.path.splitext(temp_list_of_filenames_in_ply_folder[i])[0])
+
+    copy_list = list_of_filenames_in_ply_folder.copy()
+
+    for i in range(len(list_of_filenames_in_ply_folder)):
+        print(f"{i} {list_of_filenames_in_ply_folder[i]}")
+
+
+    index_of_all_data  = []
+    for i in range(len(list_of_filenames_in_ply_folder)):
+        index_of_all_data.append(i)
+
+    index_of_train_data = []
+    train_point_cloud_names = []
+
+    is_at_least_one_file_added = False
+
+    while True:
+        input_number = input()
+        try:
+            value_of_input_for_data = int(input_number)
+            if value_of_input_for_data == -1:
+                if is_at_least_one_file_added:
+                    print("OK you choosed enough files")
+                    break
+                else:
+                    print("You need to choose at least one file to train")
+            else:
+                if value_of_input_for_data < len(list_of_filenames_in_ply_folder):
+                    item = list_of_filenames_in_ply_folder[value_of_input_for_data]
+                    print(f"You choosed file: {item}")
+                    train_point_cloud_names.append(item)
+                    index_of_train_data.append(copy_list.index(item))
+                    list_of_filenames_in_ply_folder.remove(item)
+                    print("Maybe smth else? That's list of what left")
+                    is_at_least_one_file_added = True
+                    if len(list_of_filenames_in_ply_folder) == 0:
+                        print("You choosed all files!")
+                        break
+                else:
+                    print(f"you entered inccorent number")
+        except ValueError:
+            print("Please enter a number")
+            pass
+
+
+
+    print("Please specify what files you want to be valid files")
+    print("Write at least one number")
+    print("if you add enough files - write -1")    
+
+    
+    temp_list_of_filenames_in_ply_folder = next(os.walk(current_folder_with_data))[2]
+    list_of_filenames_in_ply_folder = []
+    
+    for i in range(len(temp_list_of_filenames_in_ply_folder)):
+        list_of_filenames_in_ply_folder.append(os.path.splitext(temp_list_of_filenames_in_ply_folder[i])[0])
+
+    copy_list = list_of_filenames_in_ply_folder.copy()
+
+    for i in range(len(list_of_filenames_in_ply_folder)):
+        print(f"{i} {list_of_filenames_in_ply_folder[i]}")
+
+    index_of_valid_data = []
+    valid_point_cloud_names = []
+
+    is_at_least_one_file_added = False
+
+    while True:
+        input_number = input()
+        try:
+            value_of_input_for_data = int(input_number)
+            if value_of_input_for_data == -1:
+                if is_at_least_one_file_added:
+                    print("OK you choosed enough files")
+                    break
+                else:
+                    print("You need to choose at least one file to train")
+            else:
+                if value_of_input_for_data < len(list_of_filenames_in_ply_folder):
+                    item = list_of_filenames_in_ply_folder[value_of_input_for_data]
+                    print(f"You choosed file: {item}")
+                    valid_point_cloud_names.append(item)
+                    index_of_valid_data.append(copy_list.index(item))
+                    list_of_filenames_in_ply_folder.remove(item)
+                    print("Maybe smth else? That's list of what left")
+                    is_at_least_one_file_added = True
+                    if len(list_of_filenames_in_ply_folder) == 0:
+                        print("You choosed all files!")
+                        break
+                else:
+                    print(f"you entered inccorent number")
+        except ValueError:
+            print("Please enter a number")
+            pass
+
+
+    point_cloud_names = copy_list
+
     print()
     print('Data Preparation')
     print('****************')
@@ -244,8 +400,9 @@ if __name__ == '__main__':
         config.saving_path = sys.argv[1]
 
     # Initialize datasets
-    training_dataset = NPM3DDataset(config, set='training', use_potentials=True)
-    test_dataset = NPM3DDataset(config, set='validation', use_potentials=True)
+    print(list_of_filenames_in_ply_folder)
+    training_dataset = NPM3DDataset(config, chosen_data_folder, copy_list, index_of_all_data, index_of_train_data, None, None, list_of_filenames_in_ply_folder,  set='training', use_potentials=True)
+    test_dataset = NPM3DDataset(config, chosen_data_folder, copy_list, index_of_all_data, None, index_of_valid_data, None, list_of_filenames_in_ply_folder, set='validation', use_potentials=True)
 
     # Initialize samplers
     training_sampler = NPM3DSampler(training_dataset)
