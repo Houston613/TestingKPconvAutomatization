@@ -27,6 +27,9 @@ import os
 import numpy as np
 import sys
 import torch
+import pathlib
+import shutil
+
 
 # Dataset
 from datasets.NPM3D import *
@@ -66,9 +69,9 @@ if __name__ == '__main__':
     while True:
         input_number = input()
         try:
-            value_of_input = int(input_number)
-            if value_of_input < len(list_of_logs):
-                print(f"You choosed log: {value_of_input}")                
+            value_of_input_for_log = int(input_number)
+            if value_of_input_for_log < len(list_of_logs):
+                print(f"You choosed log: {value_of_input_for_log}")                
                 break
             print(f"you entered inccorent number")
         except ValueError:
@@ -77,7 +80,58 @@ if __name__ == '__main__':
         
         
     
-    chosen_log = f"results/{list_of_logs[value_of_input]}"
+    chosen_log = f"results/{list_of_logs[value_of_input_for_log]}"
+
+    path_to_data = os.getcwd() + "/data"
+    list_of_data = os.listdir(path_to_data)
+
+
+    print("Choose Data folder: That's directory with name of data files. Please, specify one of them")
+    print(list_of_data)
+
+    for i in range(len(list_of_data)):
+        print(f"{i} {list_of_data[i]}")
+
+    while True:
+        input_number = input()
+        try:
+            value_of_input_for_data = int(input_number)
+            if value_of_input_for_data < len(list_of_data):
+                print(f"You choosed data folder: {value_of_input_for_data}")                
+                break
+            print(f"you entered inccorent number")
+        except ValueError:
+            print("Please enter a number")
+            pass
+
+    chosen_data_folder = f"{path_to_data}/{list_of_data[value_of_input_for_data]}"
+    print(chosen_data_folder)
+
+    all_files_in_data_folder = os.listdir(chosen_data_folder)
+
+    if 'original_ply' not in all_files_in_data_folder:
+        print('You have not specified original_ply folder in data folder. All .ply must be in that folder. I will create it by next line of code and add all you ply files in there')
+        os.mkdir(os.path.join(chosen_data_folder, 'original_ply'))
+    
+
+    list_of_filenames_in_data_folder = next(os.walk(chosen_data_folder))[2]
+    print(list_of_filenames_in_data_folder)
+
+    for i in range(len(list_of_filenames_in_data_folder)):
+        current_file = list_of_filenames_in_data_folder[i]
+        file_extension = pathlib.Path(current_file).suffix
+        if file_extension == '.ply':
+            
+            print(current_file)
+            str = f"{chosen_data_folder}/original_ply/"
+            print(str)
+            shutil.move(f"{chosen_data_folder}/{current_file}",f"{chosen_data_folder}/original_ply/{current_file}")
+
+
+
+
+
+    
     # Choose the index of the checkpoint to load OR None if you want to load the current checkpoint
     chkp_idx = -1
 
@@ -144,7 +198,7 @@ if __name__ == '__main__':
 
     # Initiate dataset
     if config.dataset == 'NPM3D':
-        test_dataset = NPM3DDataset(config,point_cloud_names,set=set)
+        test_dataset = NPM3DDataset(config, chosen_data_folder, point_cloud_names,set=set)
         test_sampler = NPM3DSampler(test_dataset)
         collate_fn = NPM3DCollate
     else:
