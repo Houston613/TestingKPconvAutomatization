@@ -29,6 +29,7 @@ import sys
 import torch
 import pathlib
 import shutil
+from plyfile import PlyData, PlyElement
 
 
 # Dataset
@@ -300,3 +301,56 @@ if __name__ == '__main__':
         tester.slam_segmentation_test(net, test_loader, config)
     else:
         raise ValueError('Unsupported dataset_task for testing: ' + config.dataset_task)
+
+    
+    need_to_start_metric_analyze = False
+    print("Does you test data have field with label?(yes/no)")
+
+    while(True):
+        user_input = input()
+        if user_input.lower() == 'yes':
+            need_to_start_metric_analyze = True
+            break
+        elif user_input.lower() == 'no':
+            print("well, that's mean we cannot find some metrics")
+            need_to_start_metric_analyze = False
+            break
+        else:
+            print('Type yes or no')
+    
+    if need_to_start_metric_analyze:
+        print("What did you call this label?")
+        label = input()
+        label = f"{label}"
+        print(test_point_cloud_names)
+        print("That's your test files. Choose one and you will see confusion matrix and jaccard score")
+        
+        for i in range(len(list_of_data)):
+            print(f"{i} {list_of_data[i]}")
+        print("You can do this as long as you do not print -1") 
+        while True:
+            input_number = input()
+            try:
+                value_of_input_for_data = int(input_number)
+                if value_of_input_for_data == -1:
+                    break
+                else:
+                    if value_of_input_for_data < len(test_point_cloud_names):
+                        item = f"{test_point_cloud_names[value_of_input_for_data]}.ply"
+
+                        print(f"You choosed file: {item}")
+                        full_path_to_original = f"{chosen_data_folder}/original_ply/{item}"
+                        point_cloud_orig = PlyData.read(full_path_to_original)
+                        data_original = point_cloud_orig['vertex'][label]
+                        data_original.astype(np.int32)
+
+                        full_path_to_result = f"{os.getcwd()}/test/{list_of_logs[value_of_input_for_log]}/predictions/{test_point_cloud_names[value_of_input_for_data]}.txt"
+                        print(full_path_to_result)
+                        data_from_test = np.loadtxt(full_path_to_result)
+                        print("Maybe smth else?")
+                        
+                    else:
+                        print(f"you entered inccorent number")
+            except ValueError:
+                print("Please enter a number")
+                pass
