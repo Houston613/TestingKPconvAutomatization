@@ -30,6 +30,8 @@ import torch
 import pathlib
 import shutil
 from plyfile import PlyData, PlyElement
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import jaccard_score
 
 
 # Dataset
@@ -347,6 +349,10 @@ if __name__ == '__main__':
                         full_path_to_result = f"{os.getcwd()}/test/{list_of_logs[value_of_input_for_log]}/predictions/{test_point_cloud_names[value_of_input_for_data]}.txt"
                         print(full_path_to_result)
                         data_from_test = np.loadtxt(full_path_to_result)
+                        a = confusion_matrix(data_original, data_from_test)
+                        print(a)
+                        a = jaccard_score(data_original, data_from_test, average=None)
+                        print(a)
                         print("Maybe smth else?")
                         
                     else:
