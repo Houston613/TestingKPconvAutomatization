@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     
     # Choose the index of the checkpoint to load OR None if you want to load the current checkpoint
-    chkp_idx = -1
+    chkp_idx = None
 
     # Choose to test on validation or test split
     on_val = False
