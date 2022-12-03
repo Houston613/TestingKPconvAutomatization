@@ -8,28 +8,28 @@ This repository allows testing a pre-trained [KPConv](https://github.com/HuguesT
 
 Initially, when starting up, we need to specify which training results we want to use. A list of available logs will be provided to choose from.
 
-![some text](doc\Screenshot_1.png?raw=true)
+![some text](doc/Screenshot_1.png?raw=true)
 
 
 ### Selecting the data folder
 
 Next, you need to create and place your data in the directory `data/name_of_your_dataset/original_ply/`.
 If you forget the last folder, it will be created automatically and all files will be moved there
-![some text](doc\Screenshot_2.png?raw=true)
+![some text](doc/Screenshot_2.png?raw=true)
 
 ### Selecting files
 A list of the files available in this folder will be displayed. You need only select at least one file for testing. If you select all the files, the next step will be performed. If you need to select part of the files, you can complete the selection by entering `-1`.
-![some text](doc\Screenshot_3.png?raw=true)
+![some text](doc/Screenshot_3.png?raw=true)
 
 ### Test phase 
 Further testing will be launched
-![some text](doc\Screenshot_5.png?raw=true)
+![some text](doc/Screenshot_5.png?raw=true)
 
 
 ### Metrics
 
 If your data was originally marked up, you can do a comparison with how the data was marked up using the neural network. To do this, you can get a Confusion matrix and Jaccard index for each of the files used to evaluate the segmentation of each class
-![some text](doc\Screenshot_4.png?raw=true)
+![some text](doc/Screenshot_4.png?raw=true)
 
 
 ## Docker
