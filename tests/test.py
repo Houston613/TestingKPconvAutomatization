@@ -3,7 +3,7 @@ import os
 
 def testPlyFolder():
     
-    path_to_data = os.getcwd() + "/data"
+    path_to_data = os.getcwd() + "/tests/data/"
     list_of_data = os.listdir(path_to_data)
     chosen_data_folder = f"{path_to_data}/{list_of_data[0]}"
     all_files_in_data_folder = os.listdir(chosen_data_folder)
@@ -11,7 +11,7 @@ def testPlyFolder():
 
 
 def testInputValidation(capsys):
-    path_to_data = os.getcwd() + "/data"
+    path_to_data = os.getcwd() + "/tests/data/"
     list_of_data = os.listdir(path_to_data)
     chosen_data_folder = f"{path_to_data}/{list_of_data[0]}"
     current_folder_with_data = f"{chosen_data_folder}"
