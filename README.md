@@ -1,7 +1,7 @@
-[![small Testing for KPConvAutomatization](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml/badge.svg?branch=develop)](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml)
+Badge fpr Develop [![small Testing for KPConvAutomatization](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml/badge.svg?branch=develop)](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml)
 
 
-[![small Testing for KPConvAutomatization](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml/badge.svg?branch=main)](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml)
+Badge for main [![small Testing for KPConvAutomatization](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml/badge.svg)](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml)
 
 
 # TestingKPconvAutomatization
