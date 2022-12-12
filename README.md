@@ -1,3 +1,9 @@
+[![small Testing for KPConvAutomatization](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml/badge.svg?branch=develop)](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml)
+
+
+[![small Testing for KPConvAutomatization](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml/badge.svg?branch=main)](https://github.com/Houston613/TestingKPconvAutomatization/actions/workflows/python_test.yml)
+
+
 # TestingKPconvAutomatization
 This repository allows testing a pre-trained [KPConv](https://github.com/HuguesTHOMAS/KPConv-PyTorch) on synthetic city data for point cloud segmentation.
 
